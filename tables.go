@@ -1,48 +1,66 @@
 package coda
 
-import (
-	"encoding/json"
-	"fmt"
+type CodaTable struct {
+	Id            string                 `json:"id"`
+	Type          string                 `json:"type"`
+	TableType     string                 `json:"tableType"`
+	Href          string                 `json:"href"`
+	BrowserLink   string                 `json:"browserLink"`
+	Name          string                 `jsson:"name"`
+	Parent        CodaParentItem         `json:"parent"`
+	ParentTable   CodaParentTable        `json:"parentTable"`
+	DisplayColumn CodaTableDisplayColumn `json:"displayColumn"`
+	RowCount      int                    `json:"rowCount"`
+	Sorts         []CodaTableSort        `json:"sorts"`
+	Layout        string                 `json:"layout"`
+	Filter        CodaTableFilter        `json:"filter"`
+	CreatedAt     string                 `json:"createdAt"`
+	UpdatedAt     string                 `json:"updatedAt"`
+}
+
+type CodaParentTable struct {
+	Id          string         `json:"id"`
+	Type        string         `json:"type"`
+	Href        string         `json:"href"`
+	BrowserLink string         `json:"browserLink"`
+	Name        string         `json:"name"`
+	TableType   string         `json:"tableType"`
+	Parent      CodaParentItem `json:"parent"`
+}
+
+type CodaTableParams struct {
+	Limit      int      `json:"limit"`
+	PageToken  string   `json:"pageToken"`
+	SortBy     string   `json:"sortBy"`
+	TableTypes []string `json:"tableTypes"`
+}
+
+type CodaTableDisplayColumn struct {
+	Id   string `json:"id"`
+	Type string `json:"type"`
+	Href string `json:"href"`
+}
+
+const (
+	SortAscending string = "ascending"
+	SortDecending        = "descending"
 )
 
-type CodaTable struct {
-	Id            string            `json:"id"`
-	Type          string            `json:"type"`
-	TableType     string            `json:"tableType"`
-	Href          string            `json:"href"`
-	BrowserLink   string            `json:"browserLink"`
-	Name          string            `jsson:"name"`
-	Parent        CodaBasicItem     `json:"parent"`
-	ParentTable   *CodaTable        `json:"parentTable"`
-	DisplayColumn CodaDisplayColumn `json:"displayColumn"`
-	RowCount      int               `json:"rowCount"`
-	Sorts         []CodaSort        `json:"sorts"`
-	Layout        string            `json:"layout"`
-	Filter        CodaFilter        `json:"filter"`
-	CreatedAt     string            `json:"createdAt"`
-	UpdatedAt     string            `json:"updatedAt"`
+type CodaTableSort struct {
+	Sorts []struct {
+		Column struct {
+			Id   string `json:"id"`
+			Type string `json:"type"`
+			Href string `json:"href"`
+		} `json:"column"`
+		Direction string `json:"direction"`
+	} `json:"sorts"`
 }
 
-func GetTable(table string) (CodaTable, error) {
-	var response CodaTable
-
-	resp, err := MakeCall(fmt.Sprintf("/tables/%s", table), "GET", nil, map[string]string{
-		"useColumnNames": "true",
-	})
-	if err != nil {
-		return CodaTable{}, err
-	}
-
-	err = json.Unmarshal(resp, &response)
-	if err != nil {
-		return CodaTable{}, err
-	}
-
-	return response, nil
-}
-
-func GetTables() ([]CodaTable, error) {
-	var response []CodaTable
-
-	return response, nil
+type CodaTableFilter struct {
+	Valid           bool `json:"valid"`
+	IsVolatile      bool `json:"IsVolatile"`
+	HasUserFormula  bool `json:"hasUserFormula"`
+	HasTodayFormula bool `json:"HasTodayFormula"`
+	HasNowFormula   bool `json:"hasNowFormula"`
 }
